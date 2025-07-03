@@ -150,6 +150,8 @@ class core_user_external extends \core_external\external_api {
         $transaction = $DB->start_delegated_transaction();
 
         $userids = array();
+        $userstoemailnewpassword = [];
+
         foreach ($params['users'] as $user) {
             // Make sure that the username, firstname and lastname are not blank.
             foreach (array('username', 'firstname', 'lastname') as $fieldname) {
@@ -246,9 +248,11 @@ class core_user_external extends \core_external\external_api {
             }
 
             if ($createpassword) {
-                setnew_password_and_mail($userobject);
                 unset_user_preference('create_password', $userobject);
                 set_user_preference('auth_forcepasswordchange', 1, $userobject);
+
+                // Add this user to the list for post-commit password mailing.
+                $userstoemailnewpassword[] = $userobject;
             }
 
             // Trigger event.
@@ -267,6 +271,11 @@ class core_user_external extends \core_external\external_api {
         }
 
         $transaction->allow_commit();
+
+        // Send out all new password emails.
+        foreach ($userstoemailnewpassword as $userobject) {
+            setnew_password_and_mail($userobject);
+        }
 
         return $userids;
     }
