@@ -4,7 +4,7 @@
 // Override these in a preset or child theme before this file is imported.
 // =============================================================================
 
-$login-layout-left-bg: $gray-200 !default;
+$login-layout-left-bg: $primary !default;
 // Applied to both panels for consistent breathing room around inner content.
 $login-layout-panel-padding: 3rem !default;
 // Max-width cap for the form column. Prevents the form stretching too wide on
@@ -59,6 +59,7 @@ $login-input-bg: $gray-100 !default;
 .login-layout-left {
     // Column widths are handled by col-lg-6 in the template.
     background-color: $login-layout-left-bg;
+    color: $white; // all child text inherits white against the primary background
     position: sticky;
     top: 0;
     align-self: flex-start; // required for position: sticky inside a flex row
@@ -81,7 +82,6 @@ $login-input-bg: $gray-100 !default;
 .login-layout-description,
 .login-layout-tagline {
     max-width: 34ch;
-    color: $gray-700;
     margin-inline: auto;
 }
 
@@ -103,9 +103,6 @@ $login-input-bg: $gray-100 !default;
     line-height: 1;
 }
 
-.login-layout-stat-label {
-    color: $gray-700;
-}
 
 // =============================================================================
 // Right panel — login form

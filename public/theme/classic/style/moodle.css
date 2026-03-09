@@ -35563,7 +35563,8 @@ textarea[data-auto-rows] {
 }
 
 .login-layout-left {
-  background-color: #e9ecef;
+  background-color: #0f6cbf;
+  color: #fff;
   position: sticky;
   top: 0;
   align-self: flex-start;
@@ -35586,7 +35587,6 @@ textarea[data-auto-rows] {
 .login-layout-description,
 .login-layout-tagline {
   max-width: 34ch;
-  color: #495057;
   margin-inline: auto;
 }
 
@@ -35606,10 +35606,6 @@ textarea[data-auto-rows] {
 .login-layout-stat-value {
   font-size: 1.25rem;
   line-height: 1;
-}
-
-.login-layout-stat-label {
-  color: #495057;
 }
 
 .login-layout-right {
