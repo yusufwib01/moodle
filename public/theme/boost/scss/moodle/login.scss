@@ -59,7 +59,7 @@ $login-input-bg: $gray-100 !default;
 .login-layout-left {
     // Column widths are handled by col-lg-6 in the template.
     background-color: $login-layout-left-bg;
-    color: $white; // all child text inherits white against the primary background
+    color: color-contrast($login-layout-left-bg); // ensures readable text regardless of background colour.
     position: sticky;
     top: 0;
     align-self: flex-start; // required for position: sticky inside a flex row
@@ -102,7 +102,6 @@ $login-input-bg: $gray-100 !default;
     font-size: $h5-font-size;
     line-height: 1;
 }
-
 
 // =============================================================================
 // Right panel — login form
