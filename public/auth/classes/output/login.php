@@ -150,8 +150,8 @@ class login implements renderable, templatable {
      * @param string $error The error message.
      * @param int $errorcode The error code from login/index.php.
      */
-    public function set_error($error, int $errorcode = 0) {
-        if ($errorcode === 3) {
+    public function set_error(string $error, int $errorcode = 0): void {
+        if ($errorcode === AUTH_LOGIN_FAILED) {
             $this->errortitle = get_string('logininvalidlogintitle');
             $this->error = get_string('logininvalidlogindetail');
         } else {

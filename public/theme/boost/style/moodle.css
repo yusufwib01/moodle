@@ -35558,10 +35558,6 @@ textarea[data-auto-rows] {
   background-color: #fff;
 }
 
-.login-layout {
-  min-height: 100vh;
-}
-
 .login-layout-left {
   background-color: #0f6cbf;
   color: #fff;
@@ -35576,24 +35572,13 @@ textarea[data-auto-rows] {
 }
 
 .login-layout-left-content {
-  max-width: 420px;
+  max-width: 360px;
   text-align: center;
-}
-
-.login-layout-title {
-  font-size: 2.5rem;
-}
-
-.login-layout-description,
-.login-layout-tagline {
-  max-width: 34ch;
-  margin-inline: auto;
 }
 
 .login-layout-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
   justify-items: center;
 }
 
@@ -35621,18 +35606,6 @@ textarea[data-auto-rows] {
   margin: auto 0;
 }
 
-.login-container .login-logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-.login-container .login-title {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-}
-.login-container .login-subtitle {
-  color: #495057;
-}
 .login-container .login-form .form-control {
   background-color: #f8f9fa;
   box-shadow: none;
@@ -35644,9 +35617,6 @@ textarea[data-auto-rows] {
   background-color: #f8f9fa;
   border-color: #87b6df;
   box-shadow: 0 0 0 0.25rem rgba(15, 108, 191, 0.75);
-}
-.login-container .login-form .login-form-forgotpassword {
-  text-align: end;
 }
 .login-container .login-form .toggle-sensitive-wrapper .toggle-sensitive-btn {
   --bs-btn-bg: #f8f9fa;
@@ -35662,13 +35632,6 @@ textarea[data-auto-rows] {
   background-color: #f8f9fa;
   border-color: #87b6df;
   box-shadow: 0 0 0 0.25rem rgba(15, 108, 191, 0.75);
-}
-.login-container .login-signup,
-.login-container .login-instructions {
-  font-size: 0.875rem;
-}
-.login-container .login-signup {
-  text-align: center;
 }
 .login-container .login-separator {
   display: flex;
@@ -35686,8 +35649,6 @@ textarea[data-auto-rows] {
 }
 .login-container .login-identityprovider-btn {
   width: 100%;
-}
-.login-container .login-identityprovider-btn {
   background-color: #fff;
   border-color: #ced4da;
   color: #6a737b;
@@ -35695,10 +35656,6 @@ textarea[data-auto-rows] {
 .login-container .login-identityprovider-btn:hover, .login-container .login-identityprovider-btn:focus {
   background-color: #f8f9fa;
   border-color: #8f959e;
-  color: #6a737b;
-}
-.login-container .login-cookiesnotice {
-  text-align: center;
 }
 .login-container .login-cookiesnotice .btn-link {
   font-size: 0.875rem;
@@ -35706,10 +35663,6 @@ textarea[data-auto-rows] {
 }
 .login-container .login-cookiesnotice .btn-link:hover, .login-container .login-cookiesnotice .btn-link:focus {
   color: #495057;
-}
-.login-container .login-languagemenu {
-  display: flex;
-  justify-content: center;
 }
 .login-container .login-languagemenu .dropdown-menu {
   max-height: 300px;

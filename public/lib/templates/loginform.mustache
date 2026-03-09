@@ -30,8 +30,8 @@
     * errortitle - Optional bold heading shown above the error message (credential failures only),
     * info - Info notification to display,
     * forgotpasswordurl - Forgot password url,
-     * hasidentityproviders - Flag, set to true to hide identity providers,
-     * identityproviders - List of identiy providers,
+    * hasidentityproviders - Flag, set to true to hide identity providers,
+    * identityproviders - List of identity providers,
     * instructions - Instructions,
     * instructionsformat - Format of instructions,
     * loginurl - Login url,
@@ -78,6 +78,7 @@
             "ltr": true
         },
         "error": "",
+        "errortitle": "",
         "info": "",
         "forgotpasswordurl": "http://localhost/stable_master/login/forgot_password.php",
         "hasidentityproviders": false,
@@ -100,12 +101,12 @@
 
 <div class="loginform">
     {{#logourl}}
-        <div id="loginlogo" class="login-logo">
+        <div id="loginlogo" class="d-flex justify-content-center mb-4">
             <img id="logoimage" src="{{logourl}}" class="img-fluid" alt="{{sitename}}"/>
         </div>
     {{/logourl}}
-    <h1 class="login-title">{{#str}}loginwelcomeback{{/str}}</h1>
-    <p class="login-subtitle mb-4">{{#str}} loginto, core, {{sitename}} {{/str}}</p>
+    <h1 class="h2">{{#str}}loginwelcomeback{{/str}}</h1>
+    <p class="text-muted mb-4">{{#str}} loginto, core, {{sitename}} {{/str}}</p>
     {{#maintenance}}
         <div class="alert alert-danger login-maintenance">
             {{{maintenance}}}
@@ -135,7 +136,7 @@
                     {{/canloginbyemail}}
                 </label>
                 <input type="text" name="username" id="username" {{!
-                    !}}class="form-control form-control-lg" {{!
+                    !}}class="form-control" {{!
                     !}}value="{{username}}" {{!
                     !}}placeholder="{{^canloginbyemail}}{{#str}}enterusername{{/str}}{{/canloginbyemail}}{{!
                     !}}{{#canloginbyemail}}{{#str}}loginenterusernameoremail{{/str}}{{/canloginbyemail}}" {{!
@@ -144,7 +145,7 @@
             <div class="login-form-password mb-3">
                 <label for="password" class="form-label">{{#str}} password {{/str}}</label>
                 <input type="password" name="password" id="password" value="" {{!
-                    !}}class="form-control form-control-lg" {{!
+                    !}}class="form-control" {{!
                     !}}placeholder="{{#str}}loginenterpassword{{/str}}" {{!
                     !}}autocomplete="current-password">
             </div>
@@ -153,16 +154,16 @@
                     {{{recaptcha}}}
                 </div>
             {{/recaptcha}}
-            <div class="login-form-forgotpassword mb-3">
+            <div class="text-end mb-3">
                 <a href="{{forgotpasswordurl}}">{{#str}}loginforgotpassword{{/str}}</a>
             </div>
             <div class="login-form-submit mb-3">
-                <button class="btn btn-primary btn-lg w-100" type="submit" id="loginbtn">{{#str}}login{{/str}}</button>
+                <button class="btn btn-primary w-100" type="submit" id="loginbtn">{{#str}}login{{/str}}</button>
             </div>
         </form>
     {{/showloginform}}
     {{#cansignup}}
-        <div class="login-signup mb-3">
+        <div class="text-center small mb-3">
             {{#instructions}}
                 <span class="text-muted me-1">{{{instructions}}}</span>
             {{/instructions}}
@@ -171,7 +172,7 @@
     {{/cansignup}}
     {{^cansignup}}
         {{#instructions}}
-            <div class="login-instructions mb-3">{{{instructions}}}</div>
+            <p class="small mb-3">{{{instructions}}}</p>
         {{/instructions}}
     {{/cansignup}}
     {{#hasidentityproviders}}
@@ -203,11 +204,11 @@
         </form>
     {{/canloginasguest}}
     {{#languagemenu}}
-        <div class="login-languagemenu my-5">
+        <div class="login-languagemenu d-flex justify-content-center my-5">
             {{>core/action_menu}}
         </div>
     {{/languagemenu}}
-    <div class="login-cookiesnotice">
+    <div class="login-cookiesnotice text-center">
         <button type="button" class="btn btn-link p-0" {{!
         }} data-modal="alert"{{!
         }} data-modal-title-str='["cookiesenabled", "core"]' {{!
