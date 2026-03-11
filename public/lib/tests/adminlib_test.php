@@ -206,4 +206,124 @@ final class adminlib_test extends \advanced_testcase {
         $saved = admin_apply_default_settings(null, false);
         $this->assertSame([], $saved);
     }
+
+    /**
+     * Test that forcelogin is readonly when enablemyhome is disabled.
+     *
+     * @covers \admin_setting_configcheckbox_forcelogin::is_readonly
+     */
+    public function test_forcelogin_readonly_home_disabled(): void {
+        $this->resetAfterTest();
+
+        set_config('enablemyhome', 0);
+        $setting = new \admin_setting_configcheckbox_forcelogin(
+            'forcelogin',
+            'Force login',
+            'Test description',
+            1,
+        );
+
+        $this->assertTrue($setting->is_readonly());
+    }
+
+    /**
+     * Test that forcelogin is editable when enablemyhome is enabled.
+     *
+     * @covers \admin_setting_configcheckbox_forcelogin::is_readonly
+     */
+    public function test_forcelogin_editable_home_enabled(): void {
+        $this->resetAfterTest();
+
+        set_config('enablemyhome', 1);
+        $setting = new \admin_setting_configcheckbox_forcelogin(
+            'forcelogin',
+            'Force login',
+            'Test description',
+            1,
+        );
+
+        $this->assertFalse($setting->is_readonly());
+    }
+
+    /**
+     * Test that disabling forcelogin fails when enablemyhome is disabled.
+     *
+     * @covers \admin_setting_configcheckbox_forcelogin::write_setting
+     */
+    public function test_forcelogin_disable_blocked_home_off(): void {
+        $this->resetAfterTest();
+
+        set_config('enablemyhome', 0);
+        $setting = new \admin_setting_configcheckbox_forcelogin(
+            'forcelogin',
+            'Force login',
+            'Test description',
+            1,
+        );
+
+        $result = $setting->write_setting('0');
+        $this->assertNotEmpty($result);
+        $this->assertIsString($result);
+    }
+
+    /**
+     * Test that disabling forcelogin succeeds when enablemyhome is enabled.
+     *
+     * @covers \admin_setting_configcheckbox_forcelogin::write_setting
+     */
+    public function test_forcelogin_disable_allowed_home_on(): void {
+        $this->resetAfterTest();
+
+        set_config('enablemyhome', 1);
+        $setting = new \admin_setting_configcheckbox_forcelogin(
+            'forcelogin',
+            'Force login',
+            'Test description',
+            1,
+        );
+
+        $result = $setting->write_setting('0');
+        $this->assertEmpty($result);
+    }
+
+    /**
+     * Test that disabling enablemyhome fails when forcelogin is off.
+     *
+     * @covers \admin_setting_configcheckbox_enablemyhome::write_setting
+     */
+    public function test_enablemyhome_disable_blocked_forcelogin_off(): void {
+        $this->resetAfterTest();
+
+        set_config('forcelogin', 0);
+        $setting = new \admin_setting_configcheckbox_enablemyhome(
+            'enablemyhome',
+            'Enable Home',
+            'Test description',
+            0,
+        );
+
+        $result = $setting->write_setting('0');
+        $this->assertNotEmpty($result);
+        $this->assertIsString($result);
+    }
+
+    /**
+     * Test that disabling enablemyhome succeeds when forcelogin is on.
+     *
+     * @covers \admin_setting_configcheckbox_enablemyhome::write_setting
+     */
+    public function test_enablemyhome_disable_allowed_forcelogin_on(): void {
+        $this->resetAfterTest();
+
+        set_config('forcelogin', 1);
+        $setting = new \admin_setting_configcheckbox_enablemyhome(
+            'enablemyhome',
+            'Enable Home',
+            'Test description',
+            0,
+        );
+
+        $result = $setting->write_setting('0');
+        $this->assertEmpty($result);
+    }
 }

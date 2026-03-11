@@ -28,7 +28,7 @@ if ($hassiteconfig) {
     $temp = new admin_settingpage('loginsettings', new lang_string('loginsettings', 'admin'));
 
     // Force to show the login page for fresh installs.
-    $temp->add(new admin_setting_configcheckbox(
+    $temp->add(new admin_setting_configcheckbox_forcelogin(
         'forcelogin',
         new lang_string('forcelogin', 'admin'),
         new lang_string('configforcelogin', 'admin'),

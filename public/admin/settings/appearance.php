@@ -141,7 +141,7 @@ if ($hassiteconfig or has_any_capability($capabilities, $systemcontext)) { // sp
 
     // Navigation settings
     $temp = new admin_settingpage('navigation', new lang_string('navigation'));
-    $temp->add(new admin_setting_configcheckbox(
+    $temp->add(new admin_setting_configcheckbox_enablemyhome(
         'enablemyhome',
         new lang_string('enablemyhome', 'admin'),
         new lang_string('enablemyhome_help', 'admin'),

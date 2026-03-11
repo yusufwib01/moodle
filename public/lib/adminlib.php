@@ -5912,6 +5912,60 @@ class admin_setting_configcheckbox_with_lock extends admin_setting_configcheckbo
 }
 
 /**
+ * Forcelogin checkbox that locks ON when enablemyhome is disabled.
+ *
+ * Disabling forcelogin would have no effect when the Home page is disabled,
+ * so the setting is greyed out in that case.
+ *
+ * @copyright 2026 Yusuf Wibisono <yusuf.wibisono@moodle.com>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class admin_setting_configcheckbox_forcelogin extends admin_setting_configcheckbox {
+    #[\Override]
+    public function is_readonly(): bool {
+        if (parent::is_readonly()) {
+            return true;
+        }
+
+        $enablemyhome = get_config('core', 'enablemyhome');
+        return empty($enablemyhome);
+    }
+
+    #[\Override]
+    public function write_setting($data) {
+        if ((string) $data === $this->no) {
+            $enablemyhome = get_config('core', 'enablemyhome');
+            if (empty($enablemyhome)) {
+                return get_string('forcelogin_enablemyhome_required', 'admin');
+            }
+        }
+        return parent::write_setting($data);
+    }
+}
+
+/**
+ * Enablemyhome checkbox that prevents disabling when forcelogin is OFF.
+ *
+ * Disabling enablemyhome while forcelogin is off would leave non-logged-in
+ * users with no accessible page.
+ *
+ * @copyright 2026 Yusuf Wibisono <yusuf.wibisono@moodle.com>
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class admin_setting_configcheckbox_enablemyhome extends admin_setting_configcheckbox {
+    #[\Override]
+    public function write_setting($data) {
+        if ((string) $data === $this->no) {
+            $forcelogin = get_config('core', 'forcelogin');
+            if (empty($forcelogin)) {
+                return get_string('enablemyhome_forcelogin_required', 'admin');
+            }
+        }
+        return parent::write_setting($data);
+    }
+}
+
+/**
  * Autocomplete as you type form element.
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
