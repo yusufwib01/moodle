@@ -81,9 +81,24 @@ $login-input-bg: $gray-100 !default;
 
 .login-container {
     .login-form {
+        .login-input-wrapper {
+            position: relative;
+        }
+
+        .login-input-icon {
+            position: absolute;
+            inset-inline-start: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: $gray-600;
+            pointer-events: none;
+            z-index: 6;
+        }
+
         .form-control {
             background-color: $login-input-bg;
             box-shadow: none;
+            padding-inline-start: 3rem;
 
             &:hover {
                 background-color: $login-input-bg;
