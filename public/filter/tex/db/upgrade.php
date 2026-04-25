@@ -57,5 +57,41 @@ function xmldb_filter_tex_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025122200, 'filter', 'tex');
     }
 
+    if ($oldversion < 2026042001) {
+        global $CFG;
+
+        // Migrate existing rendered images from the legacy dataroot location to the Moodle file system,
+        // then remove the old directory. Images not migrated (corrupt/unreadable) will be re-rendered.
+        $olddir = "{$CFG->dataroot}/filter/tex";
+        if (file_exists($olddir) && is_dir($olddir)) {
+            $syscontext = \core\context\system::instance();
+            $fs = get_file_storage();
+
+            $files = array_merge(
+                glob($olddir . '/*.png') ?: [],
+                glob($olddir . '/*.gif') ?: [],
+                glob($olddir . '/*.svg') ?: [],
+            );
+            foreach ($files as $filepath) {
+                $filename = basename($filepath);
+                if ($fs->file_exists($syscontext->id, 'filter_tex', 'rendered_images', 0, '/', $filename)) {
+                    continue;
+                }
+                $filerecord = [
+                    'contextid' => $syscontext->id,
+                    'component' => 'filter_tex',
+                    'filearea' => 'rendered_images',
+                    'itemid' => 0,
+                    'filepath' => '/',
+                    'filename' => $filename,
+                ];
+                $fs->create_file_from_pathname($filerecord, $filepath);
+            }
+            remove_dir($olddir);
+        }
+
+        upgrade_plugin_savepoint(true, 2026042001, 'filter', 'tex');
+    }
+
     return true;
 }
