@@ -99,17 +99,17 @@ $login-input-bg: $gray-100 !default;
                     box-shadow: $input-focus-box-shadow;
                 }
             }
-        }
 
-        .login-input-icon {
-            position: absolute;
-            inset-inline-start: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: $gray-600;
-            pointer-events: none;
-            // Exceeds Bootstrap's focused input z-index (3) to stay visible over focused fields.
-            z-index: 6;
+            .login-input-icon {
+                position: absolute;
+                inset-inline-start: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $gray-600;
+                pointer-events: none;
+                // Exceeds Bootstrap's focused input z-index (3) to stay visible over focused fields.
+                z-index: 6;
+            }
         }
 
         .toggle-sensitive-wrapper .toggle-sensitive-btn {

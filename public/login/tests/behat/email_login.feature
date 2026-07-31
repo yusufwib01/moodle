@@ -25,7 +25,7 @@ Feature: Login using email address
     Then I should see "<message>"
 
     Examples:
-      | authloginviaemail | usernameiconselector                                             | otherusernameiconselector                                         | login            | message              |
+      | authloginviaemail | usernameiconselector                                | otherusernameiconselector                           | login            | message              |
       | 0                 | .login-form-username .login-input-icon .fa-user     | .login-form-username .login-input-icon .fa-envelope | testuser         | You are logged in as |
       | 0                 | .login-form-username .login-input-icon .fa-user     | .login-form-username .login-input-icon .fa-envelope | user@example.com | Unable to log in     |
       | 1                 | .login-form-username .login-input-icon .fa-envelope | .login-form-username .login-input-icon .fa-user     | testuser         | You are logged in as |

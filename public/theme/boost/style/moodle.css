@@ -38334,7 +38334,7 @@ textarea[data-auto-rows] {
   border-color: #87b6df;
   box-shadow: 0 0 0 0.25rem rgba(15, 108, 191, 0.75);
 }
-.login-container .login-form .login-input-icon {
+.login-container .login-form .login-input-wrapper .login-input-icon {
   position: absolute;
   inset-inline-start: 1rem;
   top: 50%;

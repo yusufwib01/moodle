@@ -104,9 +104,9 @@
                     {{/canloginbyemail}}
                 </label>
                 <div class="login-input-wrapper">
-                    <span class="login-input-icon" aria-hidden="true">
-                        {{#canloginbyemail}}<i class="icon fa fa-envelope fa-fw m-0"></i>{{/canloginbyemail}}
-                        {{^canloginbyemail}}<i class="icon fa fa-user fa-fw m-0"></i>{{/canloginbyemail}}
+                    <span class="login-input-icon">
+                        {{#canloginbyemail}}{{#pix}}i/email, core{{/pix}}{{/canloginbyemail}}
+                        {{^canloginbyemail}}{{#pix}}i/user, core{{/pix}}{{/canloginbyemail}}
                     </span>
                     <input
                         type="text"
@@ -122,8 +122,8 @@
             <div class="login-form-password mb-3">
                 <label for="password" class="form-label">{{#str}} password {{/str}}</label>
                 <div class="login-input-wrapper">
-                    <span class="login-input-icon" aria-hidden="true">
-                        <i class="icon fa fa-lock fa-fw m-0"></i>
+                    <span class="login-input-icon">
+                        {{#pix}}i/lock, core{{/pix}}
                     </span>
                     <input
                         type="password"
