@@ -78,6 +78,26 @@ export const determineDisplayMap = (dependant, displayMap, lock) => {
 };
 
 /**
+ * Is the form element inside a filepicker or filemanager?
+ *
+ * @param {HTMLElement} element The element to check.
+ * @returns {Boolean}
+ */
+const isFilepickerType = (element) => {
+    if (element.closest('.fitem [data-fieldtype="filepicker"], .fitem [data-fieldtype="filemanager"]')) {
+        return true;
+    }
+    const groupContainer = element.closest('.fitem [data-fieldtype="group"]');
+    if (!groupContainer) {
+        return false;
+    }
+    if (element.tagName === 'INPUT' && element.id.includes('filemanager')) {
+        return true;
+    }
+    return groupContainer.querySelector('input[id*="filemanager"]') !== null;
+};
+
+/**
  * Disable an element.
  *
  * @param {HTMLElement} element The element to be disabled.
@@ -88,6 +108,9 @@ export const lock = (element) => {
     if (element.dataset.fieldtype === 'editor' || element.closest('[data-fieldtype="editor"]')) {
         element.setAttribute('readonly', 'readonly');
         element.dispatchEvent(new Event('form:editorUpdated'));
+    }
+    if (isFilepickerType(element)) {
+        element.closest('.fitem')?.classList.add('disabled');
     }
 };
 
@@ -102,6 +125,9 @@ export const unlock = (element) => {
     if (element.dataset.fieldtype === 'editor' || element.closest('[data-fieldtype="editor"]')) {
         element.removeAttribute('readonly');
         element.dispatchEvent(new Event('form:editorUpdated'));
+    }
+    if (isFilepickerType(element)) {
+        element.closest('.fitem')?.classList.remove('disabled');
     }
 };
 
