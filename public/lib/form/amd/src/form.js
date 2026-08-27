@@ -30,7 +30,6 @@
 import * as FormChangeChecker from './changechecker';
 import * as Submit from './submit';
 import Rules from './form/rules';
-import {mapTemplate} from './form/display';
 import * as MutateDom from './form/display';
 import Pending from 'core/pending';
 
@@ -148,7 +147,7 @@ export default class Form {
      * @returns {Map<String, Array>}
      */
     generateDisplayMap() {
-        const map = mapTemplate();
+        const map = MutateDom.mapTemplate();
         [...this.form.elements].forEach((element) => {
             if (this.isAdvcheckboxShadowInput(element)) {
                 return;
@@ -245,7 +244,7 @@ export default class Form {
      * @returns {Map<String, Array<String>>} Actions to be taken along with element names that should be affected.
      */
     dispatchDependencyRules(target) {
-        const displayMap = mapTemplate();
+        const displayMap = MutateDom.mapTemplate();
         this.dependencies.get(target.name).forEach((dependants, ruleName) => {
             // If the rule exists, use it, otherwise fallback to 'neq' which seems to be the "default" rule originally.
             const elNamesMap = this.rules[ruleName] ? this.rules[ruleName](target) : this.rules.neq(target);

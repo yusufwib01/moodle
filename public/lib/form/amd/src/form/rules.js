@@ -95,7 +95,7 @@ export default class Rules {
             } else if (target.type === 'checkbox' && !target.checked) {
                 lock = target.checked === Boolean(key);
             } else if (target.classList.contains('filepickerhidden')) {
-                lock = !M.form_filepicker.instances[target.id].fileadded;
+                lock = !M.form_filepicker?.instances[target.id]?.fileadded;
             } else {
                 lock = this.getSelectValues(target).join('|') === key;
             }
@@ -128,7 +128,7 @@ export default class Rules {
             } else if (target.type === 'checkbox' && !target.checked) {
                 lock = target.checked === Boolean(key);
             } else if (target.classList.contains('filepickerhidden')) {
-                lock = !!M.form_filepicker.instances[target.id].fileadded;
+                lock = !!M.form_filepicker?.instances[target.id]?.fileadded;
             } else {
                 lock = this.getSelectValues(target).join('|') !== key;
             }
