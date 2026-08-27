@@ -109,6 +109,11 @@ export const lock = (element) => {
         element.setAttribute('readonly', 'readonly');
         element.dispatchEvent(new Event('form:editorUpdated'));
     }
+    if (element.dataset.groupname) {
+        element.querySelectorAll(`[name^="${element.dataset.groupname}["]`).forEach((child) => {
+            child.setAttribute('disabled', 'disabled');
+        });
+    }
     if (isFilepickerType(element)) {
         element.closest('.fitem')?.classList.add('disabled');
     }
@@ -125,6 +130,11 @@ export const unlock = (element) => {
     if (element.dataset.fieldtype === 'editor' || element.closest('[data-fieldtype="editor"]')) {
         element.removeAttribute('readonly');
         element.dispatchEvent(new Event('form:editorUpdated'));
+    }
+    if (element.dataset.groupname) {
+        element.querySelectorAll(`[name^="${element.dataset.groupname}["]`).forEach((child) => {
+            child.removeAttribute('disabled');
+        });
     }
     if (isFilepickerType(element)) {
         element.closest('.fitem')?.classList.remove('disabled');
