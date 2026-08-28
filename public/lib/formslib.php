@@ -1429,9 +1429,11 @@ abstract class moodleform {
      * Returns a JS module definition for the mforms JS
      *
      * @return array
+     * @deprecated since Moodle 5.3 - please do not use this function any more
      */
+    #[\core\attribute\deprecated(reason: 'the mform JS was migrated to an ECMAScript module', since: '5.3', mdl: 'MDL-82294')]
     public static function get_js_module() {
-        global $CFG;
+        \core\deprecation::emit_deprecation([self::class, __FUNCTION__]);
         return array(
             'name' => 'mform',
             'fullpath' => '/lib/form/form.js',
