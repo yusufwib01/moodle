@@ -107,4 +107,72 @@ final class message_output_sms_test extends \advanced_testcase {
         $this->assertEquals(message_status::GATEWAY_SENT, $message->status);
     }
 
+    /**
+     * Test the SMS checks for the SMS processor.
+     *
+     * @param bool $nosmsever Whether $CFG->nosmsever is set.
+     * @param string $component The component sending the message.
+     * @param bool $hassmstext Whether the message has an SMS text.
+     * @param bool $expected The expected result.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('should_send_sms_provider')]
+    public function test_should_send_sms(
+        bool $nosmsever,
+        string $component,
+        bool $hassmstext,
+        bool $expected,
+    ): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/message/output/sms/message_output_sms.php');
+
+        $this->resetAfterTest();
+
+        if ($nosmsever) {
+            $CFG->nosmsever = true;
+        }
+
+        $messagedata = new \stdClass();
+        $messagedata->component = $component;
+        $messagedata->name = notification_helper::TYPE_DUE_DIGEST;
+        if ($hassmstext) {
+            $messagedata->fullmessagesms = 'Hello sms message';
+        }
+
+        $output = new \message_output_sms();
+        $this->assertEquals($expected, $output->should_send_sms($messagedata));
+    }
+
+    /**
+     * Data provider for test_should_send_sms.
+     *
+     * @return array
+     */
+    public static function should_send_sms_provider(): array {
+        return [
+            'Supported component with an SMS text' => [
+                'nosmsever' => false,
+                'component' => 'mod_assign',
+                'hassmstext' => true,
+                'expected' => true,
+            ],
+            'Blocked by nosmsever' => [
+                'nosmsever' => true,
+                'component' => 'mod_assign',
+                'hassmstext' => true,
+                'expected' => false,
+            ],
+            'No SMS text in the message' => [
+                'nosmsever' => false,
+                'component' => 'mod_assign',
+                'hassmstext' => false,
+                'expected' => false,
+            ],
+            'Component which does not support SMS' => [
+                'nosmsever' => false,
+                'component' => 'mod_forum',
+                'hassmstext' => true,
+                'expected' => false,
+            ],
+        ];
+    }
 }
