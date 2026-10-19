@@ -124,6 +124,7 @@ $string['groupmode_help'] = '* No groups
 The group mode set at course level is the default mode for all activities. If the group mode is forced at course level, it can\'t be changed in an activity.';
 $string['groupmodeforce'] = 'Force group mode';
 $string['groupmodeforce_help'] = 'The group mode is enforced for all activities and can\'t be changed in an activity.';
+$string['groupmodewithname'] = 'Group mode: {$a}';
 $string['groupmy'] = 'My group';
 $string['groupname'] = 'Group name';
 $string['groupnameexists'] = 'The group name \'{$a}\' already exists in this course, please choose another one.';

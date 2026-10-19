@@ -374,17 +374,16 @@ button.section-collapsemenu {
             "dates         dates         dates         dates"
             "availability  availability  availability  availability";
         @include media-breakpoint-down(sm) {
-            grid-template-columns: 1fr min-content;
+            grid-template-columns: 1fr min-content min-content;
             grid-template-areas:
-                "icon          actions"
-                "name          name"
-                "altcontent    altcontent"
-                "afterlink     afterlink"
-                "visibility    visibility"
-                "dates         dates"
-                "groupmode     groupmode"
-                "completion    completion"
-                "availability  availability";
+                "icon          groupmode     actions"
+                "name          name          name"
+                "altcontent    altcontent    altcontent"
+                "afterlink     afterlink     afterlink"
+                "visibility    visibility    visibility"
+                "dates         dates         dates"
+                "availability  availability  availability"
+                "completion    completion    completion";
         }
     }
     // Activity card specific grid layout for activities without name.
@@ -396,14 +395,13 @@ button.section-collapsemenu {
             "afterlink     afterlink        afterlink     afterlink"
             "availability  availability     availability  availability";
         @include media-breakpoint-down(sm) {
-            grid-template-columns: 1fr min-content;
+            grid-template-columns: 1fr min-content min-content;
             grid-template-areas:
-                "visibility    actions"
-                "altcontent    altcontent"
-                "groupmode     groupmode"
-                "afterlink     afterlink"
-                "completion    completion"
-                "availability  availability";
+                "visibility    groupmode     actions"
+                "altcontent    altcontent    altcontent"
+                "afterlink     afterlink     afterlink"
+                "availability  availability  availability"
+                "completion    completion    completion";
         }
     }
 
@@ -531,35 +529,21 @@ button.section-collapsemenu {
     .activity-groupmode-info {
         grid-area: groupmode;
         justify-self: end;
-        .groupmode-information {
-            height: $activity-controls-height;
-            width: $activity-controls-height;
-            @include border-radius();
+        .groupmode-trigger .icon,
+        .groupmode-indicator .icon {
+            margin: 0;
+        }
+        .groupmode-trigger.mds-btn {
+            block-size: $activity-controls-height;
+            padding-block: 0;
+            white-space: nowrap;
+        }
+        .groupmode-indicator {
+            color: var(--mds-text-subtle);
             .icon {
-                width: map-get($iconsizes, 3);
-                height: map-get($iconsizes, 3);
-            }
-        }
-        .groupmode-icon-info {
-            display: none;
-        }
-        @include media-breakpoint-down(sm) {
-            width: 100%;
-            margin-top: map-get($spacers, 2);
-            padding-top: map-get($spacers, 2);
-            border-top: $border-width solid $border-color;
-            .groupmode-information {
-                width: auto;
-                font-size: inherit;
-                padding: 0 map-get($spacers, 2);
-            }
-            .groupmode-icon-info {
-                display: inline;
-            }
-            // Disable v-parent-focus behaviour on small devices to always show the groupmode button.
-            .v-parent-focus {
-                opacity: 1;
-                visibility: visible;
+                inline-size: $mds-icons-xs;
+                block-size: $mds-icons-xs;
+                font-size: $mds-icons-xs;
             }
         }
     }
@@ -1189,4 +1173,16 @@ body.editing#page-course-learningoutcomes .activity-item {
     &.selected {
         outline: none;
     }
+}
+
+.mds-dropdown-item.groupmode-option {
+    max-inline-size: 13.5625rem; /* 217px */
+}
+
+.mds-dropdown-menu:has(> .groupmode-menu) {
+    z-index: $zindex-dropdown;
+}
+
+.groupmode-menu {
+    display: contents;
 }

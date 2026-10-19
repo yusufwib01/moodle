@@ -1,0 +1,191 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Activity group mode dropdown displayed on every activity card in edit mode.
+ *
+ * @module     core_course/local/cm/GroupModeDropdown
+ * @copyright  2026 Yusuf Wibisono <yusuf.wibisono@moodle.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+import {useEffect, useRef, useState, type KeyboardEvent} from 'react';
+import {Dropdown, DropdownItemSelect, DropdownTrigger} from '@moodlehq/design-system';
+import {requireAsync} from '@moodle/lms/core/amd';
+import Pending from '@moodle/lms/core/pending';
+
+export interface GroupModeOption {
+    /** The group mode constant (NOGROUPS, SEPARATEGROUPS or VISIBLEGROUPS). */
+    value: number;
+    label: string;
+    description?: string;
+    /** The trigger accessible name while this option is current. It always contains the label. */
+    accessiblename: string;
+    /** The rendered option icon HTML. */
+    icon: string;
+    /** The course editor mutation that applies the option. */
+    mutation: string;
+}
+
+export interface GroupModeDropdownProps {
+    cmid: number;
+    /** The current group mode. */
+    value: number;
+    options: GroupModeOption[];
+}
+
+type CourseEditor = {
+    dispatch: (actionName: string, ...params: unknown[]) => Promise<void>;
+};
+
+type CourseEditorModule = {
+    getCurrentCourseEditor: () => CourseEditor;
+};
+
+/**
+ * Preserve focus across component remounts when a group mode change reloads the activity card.
+ */
+const pendingFocus = new Set<number>();
+
+/**
+ * Render the activity group mode dropdown.
+ *
+ * @param props Component props.
+ * @returns The rendered dropdown.
+ */
+export default function GroupModeDropdown({cmid, value, options}: GroupModeDropdownProps) {
+    const [open, setOpen] = useState(false);
+    const [current, setCurrent] = useState(value);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+    const getTrigger = () => dropdownRef.current?.querySelector<HTMLButtonElement>('.groupmode-trigger');
+
+    useEffect(() => {
+        if (pendingFocus.delete(cmid)) {
+            getTrigger()?.focus();
+        }
+    }, [cmid]);
+
+    useEffect(() => {
+        if (!open) {
+            return undefined;
+        }
+        const selectedindex = options.findIndex((option) => option.value === current);
+        if (selectedindex <= 0) {
+            return undefined;
+        }
+        let frame = requestAnimationFrame(() => {
+            frame = requestAnimationFrame(() => itemRefs.current[selectedindex]?.focus());
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [open, options, current]);
+
+    const closeMenu = () => {
+        setOpen(false);
+        getTrigger()?.focus();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            closeMenu();
+            return;
+        }
+        const items = itemRefs.current.filter((item): item is HTMLButtonElement => item !== null);
+        const index = items.indexOf(document.activeElement as HTMLButtonElement);
+        let wrapto: HTMLButtonElement | null = null;
+        if (event.key === 'ArrowDown' && index === items.length - 1) {
+            wrapto = items[0];
+        } else if (event.key === 'ArrowUp' && index === 0) {
+            wrapto = items[items.length - 1];
+        }
+        if (wrapto) {
+            event.preventDefault();
+            event.stopPropagation();
+            wrapto.focus();
+        }
+    };
+
+    const selected = options.find((option) => option.value === current) ?? options[0];
+
+    const selectOption = (option: GroupModeOption) => {
+        closeMenu();
+        if (option.value === current) {
+            return;
+        }
+        const previous = current;
+        setCurrent(option.value);
+        pendingFocus.add(cmid);
+
+        const pending = new Pending('core_course/local/cm/GroupModeDropdown:select');
+        requireAsync<CourseEditorModule>('core_courseformat/courseeditor')
+            .then(({getCurrentCourseEditor}) => getCurrentCourseEditor().dispatch(option.mutation, [cmid]))
+            .catch(() => {
+                pendingFocus.delete(cmid);
+                setCurrent(previous);
+            })
+            .finally(() => pending.resolve());
+    };
+
+    return (
+        <Dropdown
+            ref={dropdownRef}
+            open={open}
+            onOpenChange={setOpen}
+            placement="bottom-end"
+            trigger={(
+                <DropdownTrigger
+                    className="groupmode-trigger"
+                    label={selected.label}
+                    appearance="default"
+                    size="md"
+                    open={open}
+                    aria-label={selected.accessiblename}
+                    startIcon={(
+                        <i
+                            className="groupmode-icon"
+                            aria-hidden="true"
+                            dangerouslySetInnerHTML={{__html: selected.icon}}
+                        />
+                    )}
+                />
+            )}
+        >
+            <div role="none" className="groupmode-menu" onKeyDown={handleKeyDown}>
+                {options.map((option, index) => (
+                    <DropdownItemSelect
+                        key={option.value}
+                        ref={(element: HTMLButtonElement | null) => {
+                            itemRefs.current[index] = element;
+                        }}
+                        className="groupmode-option"
+                        label={option.label}
+                        description={option.description}
+                        selected={option.value === current}
+                        startIcon={(
+                            <i
+                                className="groupmode-icon"
+                                aria-hidden="true"
+                                dangerouslySetInnerHTML={{__html: option.icon}}
+                            />
+                        )}
+                        onClick={() => selectOption(option)}
+                    />
+                ))}
+            </div>
+        </Dropdown>
+    );
+}
