@@ -112,17 +112,17 @@ Feature: Activities group mode icons behavior in course page
     Then I should see "Group mode: <forcedname>" in the "No groups forum" "core_courseformat > Activity groupmode indicator"
     And I should see "Group mode: <forcedname>" in the "Visible groups database" "core_courseformat > Activity groupmode indicator"
     And I should see "Group mode: <forcedname>" in the "Separate groups assignment" "core_courseformat > Activity groupmode indicator"
-    And "<forcedname>" "button" should not exist in the "Separate groups assignment" "core_courseformat > Activity groupmode"
+    And "<shortname>" "button" should not exist in the "Separate groups assignment" "core_courseformat > Activity groupmode"
     And "No groups page" "core_courseformat > Activity groupmode" should not exist
 
     Examples:
-      | courseformat | groupmode | forcedname      |
-      | topics       | 0         | No groups       |
-      | topics       | 1         | Separate groups |
-      | topics       | 2         | Visible groups  |
-      | weeks        | 0         | No groups       |
-      | weeks        | 1         | Separate groups |
-      | weeks        | 2         | Visible groups  |
+      | courseformat | groupmode | forcedname      | shortname |
+      | topics       | 0         | No groups       | No groups |
+      | topics       | 1         | Separate groups | Separate  |
+      | topics       | 2         | Visible groups  | Visible   |
+      | weeks        | 0         | No groups       | No groups |
+      | weeks        | 1         | Separate groups | Separate  |
+      | weeks        | 2         | Visible groups  | Visible   |
 
   Scenario Outline: The group mode control is reachable at every viewport width
     Given the following "users" exist:
@@ -143,16 +143,16 @@ Feature: Activities group mode icons behavior in course page
     And I log in as "teacher1"
     When I am on "Course 1" course homepage with editing mode on
     Then "No groups" "button" in the "Forum" "core_courseformat > Activity groupmode" should be visible
-    And "Separate groups" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
-    And "Visible groups" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
+    And "Separate" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
+    And "Visible" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
     And I change viewport size to "800x1024"
     And "No groups" "button" in the "Forum" "core_courseformat > Activity groupmode" should be visible
-    And "Separate groups" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
-    And "Visible groups" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
+    And "Separate" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
+    And "Visible" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
     And I change viewport size to "480x800"
     And "No groups" "button" in the "Forum" "core_courseformat > Activity groupmode" should be visible
-    And "Separate groups" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
-    And "Visible groups" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
+    And "Separate" "button" in the "Assignment" "core_courseformat > Activity groupmode" should be visible
+    And "Visible" "button" in the "Database" "core_courseformat > Activity groupmode" should be visible
     And "Page" "core_courseformat > Activity groupmode" should not exist
 
     Examples:

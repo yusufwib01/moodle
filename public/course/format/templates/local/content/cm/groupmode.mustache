@@ -24,6 +24,7 @@
         "activityname": "Course announcements",
         "groupicon": "i/groupv",
         "groupalt": "Visible groups",
+        "triggerlabel": "Visible",
         "accessiblename": "Group mode: Visible groups",
         "reactprops": "{\"cmid\":42,\"value\":2,\"options\":[]}",
         "dropwdown": {
@@ -46,7 +47,7 @@
             {{$ buttoncontent }}
                 <span class="visually-hidden">{{accessiblename}}</span>
                 {{{groupicon}}}
-                <span class="groupmode-icon-info" aria-hidden="true">{{groupalt}}</span>
+                <span class="groupmode-icon-info" aria-hidden="true">{{triggerlabel}}</span>
                 {{#pix}} t/expandedchevron, core {{/pix}}
             {{/ buttoncontent }}
         {{/ core/local/dropdown/status}}

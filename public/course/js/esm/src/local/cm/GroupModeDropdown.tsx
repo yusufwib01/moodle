@@ -30,6 +30,8 @@ export interface GroupModeOption {
     /** The group mode constant (NOGROUPS, SEPARATEGROUPS or VISIBLEGROUPS). */
     value: number;
     label: string;
+    /** The shorter label the trigger shows. The menu keeps the full label. */
+    triggerlabel: string;
     description?: string;
     /** The trigger accessible name while this option is current. It always contains the label. */
     accessiblename: string;
@@ -149,7 +151,7 @@ export default function GroupModeDropdown({cmid, value, options}: GroupModeDropd
             trigger={(
                 <DropdownTrigger
                     className="groupmode-trigger"
-                    label={selected.label}
+                    label={selected.triggerlabel}
                     appearance="default"
                     size="md"
                     open={open}

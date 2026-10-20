@@ -223,10 +223,15 @@ final class groupmode_test extends \advanced_testcase {
             ['No groups', 'Separate groups', 'Visible groups'],
             array_column($props->options, 'label'),
         );
+        // The control shows a shorter label than the menu.
+        $this->assertEquals(
+            ['No groups', 'Separate', 'Visible'],
+            array_column($props->options, 'triggerlabel'),
+        );
     }
 
     /**
-     * Test the accessible name of every value contains its visible label.
+     * Test the accessible name of every value contains the label shown on the control.
      */
     public function test_accessible_name_contains_label(): void {
         $this->resetAfterTest();
@@ -243,7 +248,7 @@ final class groupmode_test extends \advanced_testcase {
         $props = json_decode($data->reactprops);
 
         foreach ($props->options as $option) {
-            $this->assertStringContainsString($option->label, $option->accessiblename);
+            $this->assertStringContainsString($option->triggerlabel, $option->accessiblename);
         }
     }
 }

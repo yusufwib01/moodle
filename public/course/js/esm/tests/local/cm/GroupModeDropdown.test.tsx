@@ -73,6 +73,7 @@ const PROPS = {
         {
             value: 0,
             label: 'No groups',
+            triggerlabel: 'No groups',
             accessiblename: 'Group mode: No groups',
             icon: '<i class="icon fa fa-users-slash"></i>',
             mutation: 'cmNoGroups',
@@ -80,6 +81,7 @@ const PROPS = {
         {
             value: 1,
             label: 'Separate groups',
+            triggerlabel: 'Separate',
             accessiblename: 'Group mode: Separate groups',
             description: 'Students are divided into groups and can only see their group\'s work.',
             icon: '<i class="icon fa fa-users-between-lines"></i>',
@@ -88,6 +90,7 @@ const PROPS = {
         {
             value: 2,
             label: 'Visible groups',
+            triggerlabel: 'Visible',
             accessiblename: 'Group mode: Visible groups',
             description: 'Students are divided into groups, but can see the work of other groups.',
             icon: '<i class="icon fa fa-users"></i>',
@@ -110,7 +113,7 @@ describe('core_course/GroupModeDropdown', () => {
         render(<GroupModeDropdown {...PROPS} />);
 
         expect(screen.getByRole('button', {name: 'Group mode: Separate groups'})).toBeInTheDocument();
-        expect(screen.getByText('Separate groups')).toBeInTheDocument();
+        expect(screen.getByText('Separate')).toBeInTheDocument();
     });
 
     it('renders the control for the no groups value too', () => {

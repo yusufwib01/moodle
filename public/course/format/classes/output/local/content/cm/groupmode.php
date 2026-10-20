@@ -148,6 +148,7 @@ class groupmode implements named_templatable, renderable {
             $options[] = [
                 'value' => (int) $option['value'],
                 'label' => $option['name'],
+                'triggerlabel' => $this->get_short_label((int) $option['value']),
                 'accessiblename' => get_string('groupmodewithname', 'group', $option['name']),
                 'description' => $option['description'] ?? '',
                 'icon' => $output->render($this->get_action_icon($mutation)),
@@ -180,6 +181,7 @@ class groupmode implements named_templatable, renderable {
             'isInteractive' => true,
             'groupicon' => $buttondata->groupicon,
             'groupalt' => $buttondata->groupalt,
+            'triggerlabel' => $this->get_short_label((int) $this->mod->effectivegroupmode),
             'accessiblename' => $buttondata->accessiblename,
             'dropwdown' => $dropdown->export_for_template($output),
         ];
@@ -237,6 +239,20 @@ class groupmode implements named_templatable, renderable {
                 'data-action' => $mutation,
             ]
         ];
+    }
+
+    /**
+     * Get the short label the control shows beside the icon.
+     * @param int $groupmode the group mode
+     * @return string
+     */
+    protected function get_short_label(int $groupmode): string {
+        $labels = [
+            NOGROUPS => 'groupsnone',
+            SEPARATEGROUPS => 'groupsseparateshort',
+            VISIBLEGROUPS => 'groupsvisibleshort',
+        ];
+        return get_string($labels[$groupmode], 'group');
     }
 
     /**

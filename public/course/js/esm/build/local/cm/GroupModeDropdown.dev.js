@@ -87,7 +87,7 @@ function GroupModeDropdown({ cmid, value, options }) {
         DropdownTrigger,
         {
           className: "groupmode-trigger",
-          label: selected.label,
+          label: selected.triggerlabel,
           appearance: "default",
           size: "md",
           open,
@@ -103,7 +103,7 @@ function GroupModeDropdown({ cmid, value, options }) {
             false,
             {
               fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-              lineNumber: 158,
+              lineNumber: 160,
               columnNumber: 25
             },
             this
@@ -113,7 +113,7 @@ function GroupModeDropdown({ cmid, value, options }) {
         false,
         {
           fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-          lineNumber: 150,
+          lineNumber: 152,
           columnNumber: 17
         },
         this
@@ -139,7 +139,7 @@ function GroupModeDropdown({ cmid, value, options }) {
             false,
             {
               fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-              lineNumber: 179,
+              lineNumber: 181,
               columnNumber: 29
             },
             this
@@ -150,13 +150,13 @@ function GroupModeDropdown({ cmid, value, options }) {
         false,
         {
           fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-          lineNumber: 169,
+          lineNumber: 171,
           columnNumber: 21
         },
         this
       )) }, void 0, false, {
         fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-        lineNumber: 167,
+        lineNumber: 169,
         columnNumber: 13
       }, this)
     },
@@ -164,7 +164,7 @@ function GroupModeDropdown({ cmid, value, options }) {
     false,
     {
       fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-      lineNumber: 144,
+      lineNumber: 146,
       columnNumber: 9
     },
     this
