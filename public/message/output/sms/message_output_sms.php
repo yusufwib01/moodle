@@ -32,6 +32,13 @@ class message_output_sms extends message_output {
 
     #[\Override]
     public function send_message($message): bool {
+        global $CFG;
+
+        if (!empty($CFG->nosmsever)) {
+            debugging('Not sending SMS due to $CFG->nosmsever config setting', DEBUG_DEVELOPER);
+            return true;
+        }
+
         $userdata = is_object($message->userto) ? $message->userto : get_complete_user_data('id', $message->userto);
 
         if (empty($userdata) || !$this->is_user_configured($userdata) || !$this->should_send_sms($message)) {

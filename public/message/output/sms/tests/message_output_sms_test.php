@@ -156,9 +156,9 @@ final class message_output_sms_test extends \advanced_testcase {
         $message->fullmessagesms = 'Hello sms message';
         $message->notification = 1;
 
-        // The processor reports the message as not sent, so the message manager flags it.
-        $this->assertFalse(message_send($message));
-        $this->assertDebuggingCalled('Error calling message processor sms');
+        // Suppressing the SMS is not a failure, so message_send() reports success.
+        $this->assertNotFalse(message_send($message));
+        $this->assertDebuggingCalled('Not sending SMS due to $CFG->nosmsever config setting');
 
         // Nothing is stored or queued for the gateway.
         $this->assertCount(0, iterator_to_array($manager->get_messages()));
