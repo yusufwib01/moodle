@@ -31,6 +31,10 @@ enum message_status: string {
     #[status()]
     case UNKNOWN = 'unknown';
 
+    #[description('status:message_blocked', 'core_sms')]
+    #[status()]
+    case MESSAGE_BLOCKED = 'message_blocked';
+
     #[description('status:message_over_size', 'core_sms')]
     #[status(failed: true)]
     case MESSAGE_OVER_SIZE = 'message_over_size';
