@@ -86,16 +86,28 @@ class manager {
     /**
      * Send a message using the message object.
      *
+     * If $CFG->nosmsever is set, the message is not sent and is marked as blocked.
+     *
      * @param message $message The message object
      * @param bool $async Whether this SMS should be sent asynchronously. Note: sensitive messages cannot be sent async
      * @param ?int $gatewayid the gateway instance id to send the sms in a specific gateway config
-     * @return message the message object after trying to send the message
+     * @return message the message object after trying to send the message, or blocked if $CFG->nosmsever is set
      */
     public function send_message(
         message $message,
         bool $async = true,
         ?int $gatewayid = null,
     ): message {
+        global $CFG;
+
+        if (!empty($CFG->nosmsever)) {
+            debugging('Not sending SMS due to $CFG->nosmsever config setting', DEBUG_DEVELOPER);
+            $message = $message->with(status: message_status::MESSAGE_BLOCKED);
+
+            // Only messages which were already stored, such as queued ones, are updated.
+            return $message->id ? $this->save_message($message) : $message;
+        }
+
         if ($async) {
             $message = $message->with(status: message_status::GATEWAY_QUEUED);
             $message = $this->save_message($message);
