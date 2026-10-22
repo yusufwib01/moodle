@@ -48,6 +48,7 @@ $string['status:gateway_not_available'] = 'The gateway is not available to send 
 $string['status:gateway_queued'] = 'The message is queued to be sent by the gateway';
 $string['status:gateway_rejected'] = 'The gateway has rejected the message';
 $string['status:gateway_sent'] = 'The message has been sent by the gateway';
+$string['status:message_blocked'] = 'The message was not sent because sending SMS is disabled on this site';
 $string['status:message_over_size'] = 'The message is too large to be sent by the gateway';
 $string['status:unknown'] = 'Unable to determine the status of the message';
 $string['sms_gateway_deleted'] = '{$a->gateway} SMS gateway deleted';
