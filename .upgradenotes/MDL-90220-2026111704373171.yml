@@ -1,0 +1,8 @@
+issueNumber: MDL-90220
+notes:
+  core_sms:
+    - message: >-
+        Added \core_sms\message_status::MESSAGE_BLOCKED. Updated
+        \core_sms\manager::send_message() to prevent messages from being sent
+        when $CFG->nosmsever is enabled.
+      type: improved

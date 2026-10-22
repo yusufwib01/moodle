@@ -589,4 +589,124 @@ final class manager_test extends \advanced_testcase {
             $this->assertCount(1, $adhoctask);
         }
     }
+
+    /**
+     * Test that a synchronous send is blocked when $CFG->nosmsever is set.
+     */
+    public function test_send_blocked_by_nosmsever(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        $config = new \stdClass();
+        $config->priority = 50;
+
+        $manager = \core\di::get(\core_sms\manager::class);
+        $manager->create_gateway_instance(
+            classname: \smsgateway_dummy\gateway::class,
+            name: 'dummy',
+            enabled: true,
+            config: $config,
+        );
+
+        $CFG->nosmsever = true;
+
+        $message = $manager->send(
+            recipientnumber: '+447123456789',
+            content: 'Hello, world!',
+            component: 'core',
+            messagetype: 'test',
+            recipientuserid: null,
+            async: false,
+        );
+
+        $this->assertDebuggingCalled('Not sending SMS due to $CFG->nosmsever config setting');
+        $this->assertEquals(message_status::MESSAGE_BLOCKED, $message->status);
+
+        // A message which was never queued is not stored at all.
+        $this->assertNull($message->id);
+        $this->assertCount(0, iterator_to_array($manager->get_messages()));
+    }
+
+    /**
+     * Test that an asynchronous send is blocked when $CFG->nosmsever is set.
+     */
+    public function test_send_async_blocked_by_nosmsever(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        $config = new \stdClass();
+        $config->priority = 50;
+
+        $manager = \core\di::get(\core_sms\manager::class);
+        $manager->create_gateway_instance(
+            classname: \smsgateway_dummy\gateway::class,
+            name: 'dummy',
+            enabled: true,
+            config: $config,
+        );
+
+        $CFG->nosmsever = true;
+
+        $message = $manager->send(
+            recipientnumber: '+447123456789',
+            content: 'Hello, world!',
+            component: 'core',
+            messagetype: 'test',
+            recipientuserid: null,
+        );
+
+        $this->assertDebuggingCalled('Not sending SMS due to $CFG->nosmsever config setting');
+        $this->assertEquals(message_status::MESSAGE_BLOCKED, $message->status);
+
+        // Nothing is stored and no task is queued.
+        $this->assertNull($message->id);
+        $this->assertCount(0, iterator_to_array($manager->get_messages()));
+        $this->assertCount(0, \core\task\manager::get_adhoc_tasks(send_sms_task::class));
+    }
+
+    /**
+     * Test that a message queued before $CFG->nosmsever was set is not sent when the task runs.
+     */
+    public function test_queued_message_blocked_by_nosmsever(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+
+        $config = new \stdClass();
+        $config->priority = 50;
+
+        $manager = \core\di::get(\core_sms\manager::class);
+        $manager->create_gateway_instance(
+            classname: \smsgateway_dummy\gateway::class,
+            name: 'dummy',
+            enabled: true,
+            config: $config,
+        );
+
+        // Queue the message while sending is still allowed.
+        $message = $manager->send(
+            recipientnumber: '+447123456789',
+            content: 'Hello, world!',
+            component: 'core',
+            messagetype: 'test',
+            recipientuserid: null,
+        );
+
+        $this->assertEquals(message_status::GATEWAY_QUEUED, $message->status);
+        $this->assertCount(1, \core\task\manager::get_adhoc_tasks(send_sms_task::class));
+
+        $CFG->nosmsever = true;
+
+        $this->expectOutputRegex('/SMS send status: message_blocked/');
+        $this->run_all_adhoc_tasks();
+
+        $this->assertDebuggingCalled('Not sending SMS due to $CFG->nosmsever config setting');
+
+        // The stored record reflects that the message was blocked rather than sent, and the task is not retried.
+        $storedmessage = $manager->get_message(['id' => $message->id]);
+        $this->assertEquals(message_status::MESSAGE_BLOCKED, $storedmessage->status);
+        $this->assertCount(0, \core\task\manager::get_adhoc_tasks(send_sms_task::class));
+    }
 }
