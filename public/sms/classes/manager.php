@@ -96,6 +96,16 @@ class manager {
         bool $async = true,
         ?int $gatewayid = null,
     ): message {
+        global $CFG;
+
+        if (!empty($CFG->nosmsever)) {
+            debugging('Not sending SMS due to $CFG->nosmsever config setting', DEBUG_DEVELOPER);
+            $message = $message->with(status: message_status::MESSAGE_BLOCKED);
+
+            // Only messages which were already stored, such as queued ones, are updated.
+            return $message->id ? $this->save_message($message) : $message;
+        }
+
         if ($async) {
             $message = $message->with(status: message_status::GATEWAY_QUEUED);
             $message = $this->save_message($message);
