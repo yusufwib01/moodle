@@ -8,13 +8,22 @@ import { jsxDEV } from "react/jsx-dev-runtime";
  * @copyright  2026 Yusuf Wibisono <yusuf.wibisono@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Dropdown, DropdownItemSelect, DropdownTrigger } from "@moodlehq/design-system";
 import { requireAsync } from "@moodle/lms/core/amd";
 import Pending from "@moodle/lms/core/pending";
 const pendingFocus = /* @__PURE__ */ new Set();
+const useIconOnly = /* @__PURE__ */ __name(() => {
+  const mediaquerylist = useMemo(() => window.matchMedia("(max-width: 575.98px)"), []);
+  const subscribe = useCallback((onstorechange) => {
+    mediaquerylist.addEventListener("change", onstorechange);
+    return () => mediaquerylist.removeEventListener("change", onstorechange);
+  }, [mediaquerylist]);
+  return useSyncExternalStore(subscribe, () => mediaquerylist.matches);
+}, "useIconOnly");
 function GroupModeDropdown({ cmid, value, options }) {
   const [open, setOpen] = useState(false);
+  const icononly = useIconOnly();
   const [current, setCurrent] = useState(value);
   const dropdownRef = useRef(null);
   const itemRefs = useRef([]);
@@ -91,6 +100,7 @@ function GroupModeDropdown({ cmid, value, options }) {
           appearance: "default",
           size: "md",
           open,
+          iconOnly: icononly,
           "aria-label": selected.accessiblename,
           startIcon: /* @__PURE__ */ jsxDEV(
             "i",
@@ -103,7 +113,7 @@ function GroupModeDropdown({ cmid, value, options }) {
             false,
             {
               fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-              lineNumber: 160,
+              lineNumber: 178,
               columnNumber: 25
             },
             this
@@ -113,7 +123,7 @@ function GroupModeDropdown({ cmid, value, options }) {
         false,
         {
           fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-          lineNumber: 152,
+          lineNumber: 169,
           columnNumber: 17
         },
         this
@@ -139,7 +149,7 @@ function GroupModeDropdown({ cmid, value, options }) {
             false,
             {
               fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-              lineNumber: 181,
+              lineNumber: 199,
               columnNumber: 29
             },
             this
@@ -150,13 +160,13 @@ function GroupModeDropdown({ cmid, value, options }) {
         false,
         {
           fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-          lineNumber: 171,
+          lineNumber: 189,
           columnNumber: 21
         },
         this
       )) }, void 0, false, {
         fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-        lineNumber: 169,
+        lineNumber: 187,
         columnNumber: 13
       }, this)
     },
@@ -164,7 +174,7 @@ function GroupModeDropdown({ cmid, value, options }) {
     false,
     {
       fileName: "public/course/js/esm/src/local/cm/GroupModeDropdown.tsx",
-      lineNumber: 146,
+      lineNumber: 163,
       columnNumber: 9
     },
     this

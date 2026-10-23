@@ -21,7 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {useEffect, useRef, useState, type KeyboardEvent} from 'react';
+import {useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent} from 'react';
 import {Dropdown, DropdownItemSelect, DropdownTrigger} from '@moodlehq/design-system';
 import {requireAsync} from '@moodle/lms/core/amd';
 import Pending from '@moodle/lms/core/pending';
@@ -62,6 +62,22 @@ type CourseEditorModule = {
 const pendingFocus = new Set<number>();
 
 /**
+ * Track whether the viewport is below the sm breakpoint.
+ *
+ * @returns Whether the control should render as an icon only button.
+ */
+const useIconOnly = (): boolean => {
+    const mediaquerylist = useMemo(() => window.matchMedia('(max-width: 575.98px)'), []);
+
+    const subscribe = useCallback((onstorechange: () => void) => {
+        mediaquerylist.addEventListener('change', onstorechange);
+        return () => mediaquerylist.removeEventListener('change', onstorechange);
+    }, [mediaquerylist]);
+
+    return useSyncExternalStore(subscribe, () => mediaquerylist.matches);
+};
+
+/**
  * Render the activity group mode dropdown.
  *
  * @param props Component props.
@@ -69,6 +85,7 @@ const pendingFocus = new Set<number>();
  */
 export default function GroupModeDropdown({cmid, value, options}: GroupModeDropdownProps) {
     const [open, setOpen] = useState(false);
+    const icononly = useIconOnly();
     const [current, setCurrent] = useState(value);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -155,6 +172,7 @@ export default function GroupModeDropdown({cmid, value, options}: GroupModeDropd
                     appearance="default"
                     size="md"
                     open={open}
+                    iconOnly={icononly}
                     aria-label={selected.accessiblename}
                     startIcon={(
                         <i

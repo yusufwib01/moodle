@@ -20,7 +20,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-import {fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import GroupModeDropdown from '@moodle/lms/core_course/local/cm/GroupModeDropdown';
 
 // @moodlehq/design-system is ESM only, so Jest cannot resolve it from a CommonJS test bundle.
@@ -43,12 +43,13 @@ jest.mock('@moodlehq/design-system', () => {
                 {open ? <div role="menu">{children}</div> : null}
             </div>
         )),
-        DropdownTrigger: ({label, startIcon, open, ...rest}: {
-            label: string; startIcon?: React.ReactNode; open?: boolean; [key: string]: unknown;
+        DropdownTrigger: ({label, startIcon, open, iconOnly, ...rest}: {
+            label: string; startIcon?: React.ReactNode; open?: boolean; iconOnly?: boolean;
+            [key: string]: unknown;
         }) => (
             <button type="button" aria-expanded={!!open} {...rest}>
                 {startIcon}
-                <span>{label}</span>
+                {iconOnly ? null : <span>{label}</span>}
             </button>
         ),
         DropdownItemSelect: forwardRef(({label, description, selected, startIcon, ...rest}: {
@@ -65,6 +66,31 @@ jest.mock('@moodlehq/design-system', () => {
 }, {virtual: true});
 
 const dispatch = jest.fn();
+
+/**
+ * Stand in for window.matchMedia.
+ *
+ * @param matches Whether the viewport is below the sm breakpoint.
+ * @returns A callback that flips the result and notifies listeners.
+ */
+const mockMatchMedia = (matches: boolean) => {
+    const listeners = new Set<() => void>();
+    const mediaquerylist = {
+        matches,
+        addEventListener: (_event: string, listener: () => void) => {
+            listeners.add(listener);
+        },
+        removeEventListener: (_event: string, listener: () => void) => {
+            listeners.delete(listener);
+        },
+    };
+    window.matchMedia = jest.fn().mockReturnValue(mediaquerylist) as unknown as typeof window.matchMedia;
+    return (next: boolean) => {
+        mediaquerylist.matches = next;
+        listeners.forEach((listener) => listener());
+    };
+};
+
 
 const PROPS = {
     cmid: 42,
@@ -102,6 +128,8 @@ const PROPS = {
 describe('core_course/GroupModeDropdown', () => {
     beforeEach(() => {
         dispatch.mockClear();
+        // Every test but the icon only ones runs at a width above the sm breakpoint.
+        mockMatchMedia(false);
         // .jest/globalSetup.ts mocks @moodle/lms/core/amd for every test, so the AMD modules the
         // component requires are registered against that shared registry.
         mockAmdModule('core_courseformat/courseeditor', {
@@ -120,6 +148,25 @@ describe('core_course/GroupModeDropdown', () => {
         render(<GroupModeDropdown {...PROPS} value={0} />);
 
         expect(screen.getByRole('button', {name: 'Group mode: No groups'})).toBeInTheDocument();
+    });
+
+    it('drops the trigger label below the sm breakpoint, keeping the accessible name', () => {
+        mockMatchMedia(true);
+        render(<GroupModeDropdown {...PROPS} />);
+
+        // The breakpoint is known on the first render, so the label is never shown at this width.
+        expect(screen.queryByText('Separate')).not.toBeInTheDocument();
+        expect(screen.getByRole('button', {name: 'Group mode: Separate groups'})).toBeInTheDocument();
+    });
+
+    it('restores the trigger label when the viewport grows past the sm breakpoint', () => {
+        const setbelowsm = mockMatchMedia(true);
+        render(<GroupModeDropdown {...PROPS} />);
+        expect(screen.queryByText('Separate')).not.toBeInTheDocument();
+
+        act(() => setbelowsm(false));
+
+        expect(screen.getByText('Separate')).toBeInTheDocument();
     });
 
     it('states the feature and the value in the accessible name', () => {

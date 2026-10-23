@@ -35780,6 +35780,22 @@ button.section-collapsemenu:hover .collapsemenu-text {
   padding-block: 0;
   white-space: nowrap;
 }
+@media (max-width: 575.98px) {
+  .activity-item .activity-groupmode-info .groupmode-trigger.mds-btn {
+    inline-size: 1.75rem;
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .activity-item .activity-groupmode-info .groupmode-trigger.mds-btn .groupmode-icon,
+  .activity-item .activity-groupmode-info .groupmode-trigger.mds-btn .groupmode-icon .icon {
+    display: inline-flex;
+    inline-size: auto;
+  }
+  .activity-item .activity-groupmode-info .groupmode-icon-info,
+  .activity-item .activity-groupmode-info .mds-dropdown-trigger__chevron {
+    display: none;
+  }
+}
 .activity-item .activity-groupmode-info .groupmode-indicator {
   color: var(--mds-text-subtle);
 }

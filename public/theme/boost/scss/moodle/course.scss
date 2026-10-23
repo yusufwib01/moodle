@@ -538,6 +538,25 @@ button.section-collapsemenu {
             padding-block: 0;
             white-space: nowrap;
         }
+
+        @include media-breakpoint-down(sm) {
+            .groupmode-trigger.mds-btn {
+                inline-size: $activity-controls-height;
+                justify-content: center;
+                padding-inline: 0;
+            }
+
+            .groupmode-trigger.mds-btn .groupmode-icon,
+            .groupmode-trigger.mds-btn .groupmode-icon .icon {
+                display: inline-flex;
+                inline-size: auto;
+            }
+            .groupmode-icon-info,
+            .mds-dropdown-trigger__chevron {
+                display: none;
+            }
+        }
+
         .groupmode-indicator {
             color: var(--mds-text-subtle);
             .icon {
