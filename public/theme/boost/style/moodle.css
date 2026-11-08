@@ -43049,10 +43049,14 @@ table .sticky-column {
 .table-responsive .table {
   margin-bottom: 0;
 }
-.table-responsive .table .visually-hidden,
-.table-responsive .table .accesshide {
+.table-responsive .table .visually-hidden:not(caption),
+.table-responsive .table .accesshide:not(caption) {
   position: relative !important; /* stylelint-disable-line declaration-no-important */
   display: block;
+}
+.table-responsive .table caption.visually-hidden,
+.table-responsive .table caption.accesshide {
+  margin: 0 !important; /* stylelint-disable-line declaration-no-important */
 }
 
 /**
