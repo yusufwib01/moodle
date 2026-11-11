@@ -91,3 +91,16 @@ Feature: Set up and manage user factors
     And I click on "Manage security key" "button"
     When I click on "Add security key" "button"
     Then I should see "Set up security key"
+
+  Scenario: The MFA preferences link is only shown on my own preferences page
+    Given the following "users" exist:
+      | username | firstname | lastname | email                |
+      | student1 | Student   | One     | student1@example.com |
+    And the following config values are set as admin:
+      | enabled | 1 | factor_totp |
+    When I follow "Preferences" in the user menu
+    Then I should see "Multi-factor authentication preferences"
+    And I am on the "student1" "user > profile" page
+    And I click on "Preferences" "link" in the "region-main" "region"
+    And I should see "Student One" in the "page-header" "region"
+    And I should not see "Multi-factor authentication preferences"
