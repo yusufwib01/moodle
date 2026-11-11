@@ -65,7 +65,12 @@ function tool_mfa_after_require_login($courseorid = null, $autologinguest = null
  * @throws \moodle_exception
  */
 function tool_mfa_extend_navigation_user_settings(navigation_node $navigation, stdClass $user, $usercontext, stdClass $course, $coursecontext) {
-    global $PAGE;
+    global $PAGE, $USER;
+
+    // The MFA preferences page only manages the current user's own factors.
+    if ($user->id != $USER->id) {
+        return null;
+    }
 
     // Only inject if user is on the preferences page.
     $onpreferencepage = $PAGE->url->compare(new moodle_url('/user/preferences.php'), URL_MATCH_BASE);
