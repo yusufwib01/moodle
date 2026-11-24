@@ -20,6 +20,8 @@ use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use mod_forum\local\container;
+use mod_forum\local\exporters\discussion_summaries;
 use mod_forum\local\vaults\discussion_list;
 
 /**
@@ -88,7 +90,7 @@ class get_discussion_list extends external_api {
             'groupid' => $groupid,
         ]);
 
-        $vaultfactory = \mod_forum\local\container::get_vault_factory();
+        $vaultfactory = container::get_vault_factory();
         $forum = $vaultfactory->get_forum_vault()->get_from_id($params['forumid']);
         if (empty($forum)) {
             throw new \moodle_exception('invalidforumid', 'forum');
@@ -106,7 +108,7 @@ class get_discussion_list extends external_api {
             self::validate_context($context);
         }
 
-        $capabilitymanager = \mod_forum\local\container::get_manager_factory()->get_capability_manager($forum);
+        $capabilitymanager = container::get_manager_factory()->get_capability_manager($forum);
         if (!$capabilitymanager->can_view_discussions($USER)) {
             throw new \moodle_exception('noviewdiscussionspermission', 'forum');
         }
@@ -121,12 +123,43 @@ class get_discussion_list extends external_api {
             throw new \invalid_parameter_exception('Invalid value for perpage parameter: ' . $params['perpage']);
         }
 
-        // TODO MDL-90423 Filter the discussions by group.
-        return [
-            'totalcount' => 0,
-            'page' => $params['page'],
-            'perpage' => $params['perpage'],
-            'sortorder' => $params['sortorder'],
+        $page = $params['page'];
+        $perpage = $params['perpage'] ?? (int) ($CFG->forum_manydiscussions ?? 0);
+        if ($perpage < 1) {
+            $perpage = discussion_list::PAGESIZE_DEFAULT;
+        }
+        $sortorder = $params['sortorder'];
+        if ($sortorder === null) {
+            $sortorder = (int) get_user_preferences('forum_discussionlistsortorder', discussion_list::SORTORDER_LASTPOST_DESC);
+            if (!in_array($sortorder, self::get_sort_orders(), true)) {
+                $sortorder = discussion_list::SORTORDER_LASTPOST_DESC;
+            }
+        }
+
+        require_once($CFG->dirroot . '/mod/forum/lib.php');
+
+        // TODO MDL-90423 Resolve the requested group and check access before using it to filter discussions.
+        $groupid = null;
+        $totalcount = mod_forum_count_all_discussions($forum, $USER, $groupid);
+        $exported = [
+            'summaries' => [],
+            'state' => ['hasdiscussions' => false],
+        ];
+
+        // Check the page before the summaries helper calculates the query offset.
+        if ($totalcount > 0 && $page <= intdiv($totalcount - 1, $perpage)) {
+            $discussions = mod_forum_get_discussion_summaries($forum, $USER, $groupid, $sortorder, $page, $perpage);
+            if ($discussions) {
+                $builder = container::get_builder_factory()->get_exported_discussion_summaries_builder();
+                $exported = $builder->build($USER, $forum, $discussions);
+            }
+        }
+
+        return $exported + [
+            'totalcount' => $totalcount,
+            'page' => $page,
+            'perpage' => $perpage,
+            'sortorder' => $sortorder,
         ];
     }
 
@@ -137,10 +170,11 @@ class get_discussion_list extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'totalcount' => new external_value(PARAM_INT, 'Total number of discussions in the forum'),
+            ...discussion_summaries::get_read_structure()->keys,
+            'totalcount' => new external_value(PARAM_INT, 'Total number of discussions matching the filters'),
             'page' => new external_value(PARAM_INT, 'Page number, starting from 0'),
-            'perpage' => new external_value(PARAM_INT, 'Number of discussions per page', VALUE_REQUIRED, null, NULL_ALLOWED),
-            'sortorder' => new external_value(PARAM_INT, 'Sort order', VALUE_REQUIRED, null, NULL_ALLOWED),
+            'perpage' => new external_value(PARAM_INT, 'Number of discussions per page'),
+            'sortorder' => new external_value(PARAM_INT, 'Sort order used for the discussion list'),
         ]);
     }
 

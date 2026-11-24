@@ -43,7 +43,7 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
     }
 
     /**
-     * Test that an enrolled student gets the empty structure, with the given values.
+     * Test that an enrolled student gets an empty list with the requested pagination and sort order.
      */
     public function test_execute_returns_empty_structure(): void {
         $this->resetAfterTest();
@@ -54,6 +54,8 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
         $result = external_api::clean_returnvalue(get_discussion_list::execute_returns(), $result);
 
         $this->assertSame([
+            'summaries' => [],
+            'state' => ['hasdiscussions' => false],
             'totalcount' => 0,
             'page' => 2,
             'perpage' => 10,
@@ -68,16 +70,69 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
         $this->resetAfterTest();
         [, $forum, $student] = $this->create_forum_with_student();
         $this->setUser($student);
+        set_config('forum_manydiscussions', 17);
 
         $result = get_discussion_list::execute($forum->id);
         $result = external_api::clean_returnvalue(get_discussion_list::execute_returns(), $result);
 
         $this->assertSame([
+            'summaries' => [],
+            'state' => ['hasdiscussions' => false],
             'totalcount' => 0,
             'page' => 0,
-            'perpage' => null,
-            'sortorder' => null,
+            'perpage' => 17,
+            'sortorder' => discussion_list::SORTORDER_LASTPOST_DESC,
         ], $result);
+
+        set_config('forum_manydiscussions', 0);
+        $this->assertSame(discussion_list::PAGESIZE_DEFAULT, get_discussion_list::execute($forum->id)['perpage']);
+    }
+
+    /**
+     * Test that the response keeps the total across pages and uses the requested or preferred sort order.
+     */
+    public function test_execute_returns_sorted_pages(): void {
+        $this->resetAfterTest();
+        [$course, $forum, $student] = $this->create_forum_with_student();
+        $this->setUser($student);
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_forum');
+        $record = ['course' => $course->id, 'forum' => $forum->id, 'userid' => $student->id];
+        $bravo = $generator->create_discussion($record + ['name' => 'Bravo']);
+        $charlie = $generator->create_discussion($record + ['name' => 'Charlie']);
+        $alpha = $generator->create_discussion($record + ['name' => 'Alpha']);
+
+        set_user_preference('forum_discussionlistsortorder', discussion_list::SORTORDER_DISCUSSION_DESC);
+        $returns = get_discussion_list::execute_returns();
+        $firstpage = external_api::clean_returnvalue(
+            $returns,
+            get_discussion_list::execute($forum->id, discussion_list::SORTORDER_DISCUSSION_ASC, 0, 2),
+        );
+        $secondpage = external_api::clean_returnvalue(
+            $returns,
+            get_discussion_list::execute($forum->id, discussion_list::SORTORDER_DISCUSSION_ASC, 1, 2),
+        );
+
+        $this->assertSame([$alpha->id, $bravo->id], array_column($firstpage['summaries'], 'id'));
+        $this->assertSame([$charlie->id], array_column($secondpage['summaries'], 'id'));
+        $this->assertTrue($firstpage['state']['hasdiscussions']);
+        $this->assertSame(3, $firstpage['totalcount']);
+        $this->assertSame(3, $secondpage['totalcount']);
+        $this->assertSame(1, $secondpage['page']);
+        $this->assertSame(2, $secondpage['perpage']);
+        $this->assertSame(discussion_list::SORTORDER_DISCUSSION_ASC, $firstpage['sortorder']);
+
+        $preferred = external_api::clean_returnvalue($returns, get_discussion_list::execute($forum->id, perpage: 2));
+        $this->assertSame([$charlie->id, $bravo->id], array_column($preferred['summaries'], 'id'));
+        $this->assertSame(discussion_list::SORTORDER_DISCUSSION_DESC, $preferred['sortorder']);
+
+        $empty = external_api::clean_returnvalue(
+            $returns,
+            get_discussion_list::execute($forum->id, page: PHP_INT_MAX, perpage: 2),
+        );
+        $this->assertSame([], $empty['summaries']);
+        $this->assertFalse($empty['state']['hasdiscussions']);
+        $this->assertSame(3, $empty['totalcount']);
+        $this->assertSame(PHP_INT_MAX, $empty['page']);
     }
 
     /**
@@ -197,14 +252,21 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
      */
     public function test_execute_site_home_through_ajax_not_logged_in(): void {
         $this->resetAfterTest();
-        $forum = $this->getDataGenerator()->create_module('forum', ['course' => SITEID]);
+        $generator = $this->getDataGenerator();
+        $forum = $generator->create_module('forum', ['course' => SITEID]);
+        $discussion = $generator->get_plugin_generator('mod_forum')->create_discussion([
+            'course' => SITEID,
+            'forum' => $forum->id,
+            'userid' => get_admin()->id,
+        ]);
         set_config('forcelogin', 0);
         $this->setUser(null);
 
         $result = external_api::call_external_function('mod_forum_get_discussion_list', ['forumid' => $forum->id], true);
 
         $this->assertFalse($result['error'], $result['exception']->message ?? '');
-        $this->assertSame(0, $result['data']['totalcount']);
+        $this->assertSame(1, $result['data']['totalcount']);
+        $this->assertSame([$discussion->id], array_column($result['data']['summaries'], 'id'));
     }
 
     /**
