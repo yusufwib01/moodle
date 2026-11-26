@@ -88,6 +88,10 @@ class discussion extends exporter {
             ],
             'times' => [
                 'type' => [
+                    'created' => [
+                        'optional' => true,
+                        'type' => PARAM_INT,
+                    ],
                     'modified' => ['type' => PARAM_INT],
                     'start' => ['type' => PARAM_INT],
                     'end' => ['type' => PARAM_INT],

@@ -136,6 +136,44 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
     }
 
     /**
+     * Test that the discussion creation time and the sort order state are kept in the cleaned return value.
+     */
+    public function test_execute_returns_builder_fields(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        [$course, $forum, $student] = $this->create_forum_with_student();
+        $this->setUser($student);
+        $discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion([
+            'course' => $course->id,
+            'forum' => $forum->id,
+            'userid' => $student->id,
+        ]);
+        $firstpost = $DB->get_record('forum_posts', ['discussion' => $discussion->id, 'parent' => 0]);
+
+        $result = get_discussion_list::execute($forum->id);
+        $result = external_api::clean_returnvalue(get_discussion_list::execute_returns(), $result);
+
+        $this->assertSame((int) $firstpost->created, $result['summaries'][0]['discussion']['times']['created']);
+        $this->assertSame([
+            'islastpostdesc',
+            'islastpostasc',
+            'isrepliesdesc',
+            'isrepliesasc',
+            'iscreateddesc',
+            'iscreatedasc',
+            'isdiscussiondesc',
+            'isdiscussionasc',
+            'isstarterdesc',
+            'isstarterasc',
+            'isgroupdesc',
+            'isgroupasc',
+        ], array_keys($result['state']['sortorder']));
+        $this->assertTrue($result['state']['sortorder']['islastpostdesc']);
+        $this->assertFalse($result['state']['sortorder']['islastpostasc']);
+    }
+
+    /**
      * Test that the function is registered as an ajax web service.
      */
     public function test_execute_through_ajax(): void {

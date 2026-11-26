@@ -1,0 +1,9 @@
+issueNumber: MDL-90421
+notes:
+  mod_forum:
+    - message: >-
+        `mod_forum_get_discussion_list` now returns the discussion creation time
+        (`times.created`) and the sort order state (`state.sortorder`), and
+        `mod_forum_set_forum_subscription` and `mod_forum_set_forum_tracking`
+        now return `capabilities.selfenrol`.
+      type: improved

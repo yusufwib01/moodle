@@ -105,6 +105,23 @@ class discussion_summaries extends exporter {
             'state' => [
                 'type' => [
                     'hasdiscussions' => ['type' => PARAM_BOOL],
+                    'sortorder' => [
+                        'optional' => true,
+                        'type' => [
+                            'islastpostdesc' => ['type' => PARAM_BOOL],
+                            'islastpostasc' => ['type' => PARAM_BOOL],
+                            'isrepliesdesc' => ['type' => PARAM_BOOL],
+                            'isrepliesasc' => ['type' => PARAM_BOOL],
+                            'iscreateddesc' => ['type' => PARAM_BOOL],
+                            'iscreatedasc' => ['type' => PARAM_BOOL],
+                            'isdiscussiondesc' => ['type' => PARAM_BOOL],
+                            'isdiscussionasc' => ['type' => PARAM_BOOL],
+                            'isstarterdesc' => ['type' => PARAM_BOOL],
+                            'isstarterasc' => ['type' => PARAM_BOOL],
+                            'isgroupdesc' => ['type' => PARAM_BOOL],
+                            'isgroupasc' => ['type' => PARAM_BOOL],
+                        ],
+                    ],
                 ],
             ],
         ];

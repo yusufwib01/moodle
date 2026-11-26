@@ -96,4 +96,38 @@ final class exporters_forum_test extends \advanced_testcase {
         $this->assertEquals(true, $exportedforum->userstate['subscribed']);
         $this->assertEquals(true, $exportedforum->capabilities['viewdiscussions']);
     }
+
+    /**
+     * Test that the capabilities exported for the forum, including selfenrol, survive the web service cleaning.
+     */
+    public function test_export_capabilities_survive_clean_returnvalue(): void {
+        global $PAGE;
+        $this->resetAfterTest();
+
+        $renderer = $PAGE->get_renderer('core');
+        $datagenerator = $this->getDataGenerator();
+        $user = $datagenerator->create_user();
+        $course = $datagenerator->create_course();
+        $forum = $datagenerator->create_module('forum', ['course' => $course->id]);
+        $coursemodule = get_coursemodule_from_instance('forum', $forum->id);
+        $context = \context_module::instance($coursemodule->id);
+        $entityfactory = \mod_forum\local\container::get_entity_factory();
+        $forum = $entityfactory->get_forum_from_stdClass($forum, $context, $coursemodule, $course);
+
+        $exporter = new forum_exporter($forum, [
+            'legacydatamapperfactory' => \mod_forum\local\container::get_legacy_data_mapper_factory(),
+            'urlfactory' => \mod_forum\local\container::get_url_factory(),
+            'capabilitymanager' => (\mod_forum\local\container::get_manager_factory())->get_capability_manager($forum),
+            'user' => $user,
+            'currentgroup' => null,
+            'vaultfactory' => \mod_forum\local\container::get_vault_factory(),
+        ]);
+
+        $exported = (array) $exporter->export($renderer);
+        $cleaned = \core_external\external_api::clean_returnvalue(forum_exporter::get_read_structure(), $exported);
+
+        $this->assertArrayHasKey('selfenrol', $cleaned['capabilities']);
+        $this->assertIsBool($cleaned['capabilities']['selfenrol']);
+        $this->assertSame($exported['capabilities']['selfenrol'], $cleaned['capabilities']['selfenrol']);
+    }
 }

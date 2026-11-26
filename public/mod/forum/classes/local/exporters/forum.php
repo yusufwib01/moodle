@@ -78,6 +78,7 @@ class forum extends exporter {
                 'type' => [
                     'viewdiscussions' => ['type' => PARAM_BOOL],
                     'create' => ['type' => PARAM_BOOL],
+                    'selfenrol' => ['type' => PARAM_BOOL],
                     'subscribe' => ['type' => PARAM_BOOL],
                     'grade' => ['type' => PARAM_BOOL],
                 ]
